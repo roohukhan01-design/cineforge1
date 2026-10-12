@@ -1,0 +1,25 @@
+name: Unpack source zip
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip CineForge-source.zip into the repo root
+        run: |
+          test -f CineForge-source.zip || { echo "Upload CineForge-source.zip to the repo root first"; exit 1; }
+          unzip -q CineForge-source.zip -d _x
+          rm -rf _x/cineforge/.github
+          cp -r _x/cineforge/. .
+          rm -rf _x CineForge-source.zip
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Unpack CineForge source"
+          git push
